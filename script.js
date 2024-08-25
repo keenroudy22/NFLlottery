@@ -1,85 +1,50 @@
-// List of NFL teams by conference
+// script.js
 const afcTeams = ["Bills", "Dolphins", "Patriots", "Jets", "Ravens", "Bengals", "Browns", "Steelers", 
                   "Texans", "Colts", "Jaguars", "Titans", "Broncos", "Chiefs", "Raiders", "Chargers"];
 const nfcTeams = ["Cowboys", "Giants", "Eagles", "Commanders", "Bears", "Lions", "Packers", "Vikings",
                   "Falcons", "Panthers", "Saints", "Buccaneers", "Cardinals", "Rams", "49ers", "Seahawks"];
 
-let players = [
-    { name: "Kinnon", afcTeams: [], nfcTeams: [], owed: 0 },
-    { name: "KJ", afcTeams: [], nfcTeams: [], owed: 0 },
-    { name: "Koby", afcTeams: [], nfcTeams: [], owed: 0 },
-    { name: "Kenzee", afcTeams: [], nfcTeams: [], owed: 0 },
-    { name: "Breena", afcTeams: [], nfcTeams: [], owed: 0 },
-    { name: "Richie", afcTeams: [], nfcTeams: [], owed: 0 },
-    { name: "Sean", afcTeams: [], nfcTeams: [], owed: 0 },
-    { name: "Hudson", afcTeams: [], nfcTeams: [], owed: 0 }
-];
+const players = ["Kinnon", "KJ", "Koby", "Kenzee", "Breena", "Richie", "Sean", "Hudson"];
 
-// Function to randomly assign 2 AFC and 2 NFC teams to each player
-function assignTeams() {
-    players.forEach(player => {
-        player.afcTeams = getRandomTeams(afcTeams, 2);
-        player.nfcTeams = getRandomTeams(nfcTeams, 2);
-    });
-    displayPlayers();
-}
+let afcTeamsShuffled = shuffle([...afcTeams]);
+let nfcTeamsShuffled = shuffle([...nfcTeams]);
 
-// Function to get random teams from a list
-function getRandomTeams(teamList, count) {
-    const selectedTeams = [];
-    const tempTeams = [...teamList];
-    
-    for (let i = 0; i < count; i++) {
-        const randomIndex = Math.floor(Math.random() * tempTeams.length);
-        selectedTeams.push(tempTeams.splice(randomIndex, 1)[0]);
+function shuffle(array) {
+    let currentIndex = array.length, randomIndex;
+    while (currentIndex !== 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
     }
-    
-    return selectedTeams;
+    return array;
 }
 
-// Function to display assigned teams for each player
-function displayPlayers() {
-    const playerList = document.getElementById('playerList');
-    playerList.innerHTML = '';
-    
+function createPlayerDiv(player) {
+    return `
+        <div class="player">
+            <div><strong>${player}</strong></div>
+            <div>
+                <div class="empty-box" id="${player}-afc1"></div>
+                <div class="empty-box" id="${player}-afc2"></div>
+            </div>
+            <div>
+                <div class="empty-box" id="${player}-nfc1"></div>
+                <div class="empty-box" id="${player}-nfc2"></div>
+            </div>
+        </div>
+    `;
+}
+
+function fillTeams() {
     players.forEach(player => {
-        const playerInfo = document.createElement('div');
-        playerInfo.innerHTML = `<strong>${player.name}</strong>:<br> 
-                                AFC Teams: ${player.afcTeams.join(", ")}<br>
-                                NFC Teams: ${player.nfcTeams.join(", ")}`;
-        playerList.appendChild(playerInfo);
+        for (let i = 1; i <= 2; i++) {
+            const afcTeam = afcTeamsShuffled.pop();
+            const nfcTeam = nfcTeamsShuffled.pop();
+            document.getElementById(`${player}-afc${i}`).textContent = afcTeam;
+            document.getElementById(`${player}-nfc${i}`).textContent = nfcTeam;
+        }
     });
 }
 
-// Function to track games and update payouts
-function trackGame() {
-    const teamName = document.getElementById('teamInput').value;
-    const score = parseInt(document.getElementById('scoreInput').value);
-    const win = confirm("Did the team win?");
-    
-    if (score === 27 && win) {
-        players.forEach(player => {
-            if (player.afcTeams.includes(teamName) || player.nfcTeams.includes(teamName)) {
-                player.owed += 10;
-                document.getElementById('gameResults').innerText = `${player.name} is owed $10!`;
-            }
-        });
-    }
-    
-    updateLeaderboard();
-}
-
-// Function to update the leaderboard
-function updateLeaderboard() {
-    const leaderboardList = document.getElementById('leaderboardList');
-    leaderboardList.innerHTML = '';
-    
-    players.forEach(player => {
-        const playerInfo = document.createElement('div');
-        playerInfo.innerText = `${player.name}: $${player.owed} owed`;
-        leaderboardList.appendChild(playerInfo);
-    });
-}
-
-// Initial team assignment when the page loads
-assignTeams();
+document.getElementById('playerContainer').innerHTML = players.map(createPlayerDiv).join('');
+document.getElementById('randomButton').addEventListener('click', fillTeams);
