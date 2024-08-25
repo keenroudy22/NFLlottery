@@ -5,9 +5,14 @@ const nfcTeams = ["Cowboys", "Giants", "Eagles", "Commanders", "Bears", "Lions",
                   "Falcons", "Panthers", "Saints", "Buccaneers", "Cardinals", "Rams", "49ers", "Seahawks"];
 
 let players = [
-    { name: "Player 1", afcTeams: [], nfcTeams: [], owed: 0 },
-    { name: "Player 2", afcTeams: [], nfcTeams: [], owed: 0 },
-    // Add more players as needed
+    { name: "Kinnon", afcTeams: [], nfcTeams: [], owed: 0 },
+    { name: "KJ", afcTeams: [], nfcTeams: [], owed: 0 },
+    { name: "Koby", afcTeams: [], nfcTeams: [], owed: 0 },
+    { name: "Kenzee", afcTeams: [], nfcTeams: [], owed: 0 },
+    { name: "Breena", afcTeams: [], nfcTeams: [], owed: 0 },
+    { name: "Richie", afcTeams: [], nfcTeams: [], owed: 0 },
+    { name: "Sean", afcTeams: [], nfcTeams: [], owed: 0 },
+    { name: "Hudson", afcTeams: [], nfcTeams: [], owed: 0 }
 ];
 
 // Function to randomly assign 2 AFC and 2 NFC teams to each player
