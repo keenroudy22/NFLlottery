@@ -1,48 +1,58 @@
+/* styles.css */
 body {
     font-family: Arial, sans-serif;
-    background-color: #4F2683; /* Minnesota Vikings Purple */
-    color: #FFFFFF;
-    margin: 0;
-    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
     text-align: center;
+    padding: 20px;
 }
 
-header {
-    background-color: #FFC62F; /* Minnesota Vikings Gold */
-    padding: 10px;
-}
-
-section {
-    margin: 20px;
-    padding: 10px;
-    border: 2px solid #FFC62F;
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 20px;
     border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-input {
-    margin: 5px;
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid #FFC62F;
+h1 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.player {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.player div {
+    display: flex;
+    flex-direction: column;
+    margin: 0 10px;
+}
+
+.empty-box {
+    border: 2px dashed #ddd;
+    height: 40px;
+    width: 150px;
+    margin: 5px 0;
+    background: #f9f9f9;
 }
 
 button {
-    background-color: #FFC62F;
-    color: #4F2683;
-    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
     border: none;
+    padding: 10px 20px;
+    font-size: 16px;
     border-radius: 5px;
     cursor: pointer;
+    margin-top: 20px;
 }
 
 button:hover {
-    background-color: #4F2683;
-    color: #FFC62F;
+    background-color: #0056b3;
 }
-
-@media (max-width: 600px) {
-    section {
-        margin: 10px;
-    }
-}
-
