@@ -1,13 +1,9 @@
-// script.js
 const afcTeams = ["Bills", "Dolphins", "Patriots", "Jets", "Ravens", "Bengals", "Browns", "Steelers", 
                   "Texans", "Colts", "Jaguars", "Titans", "Broncos", "Chiefs", "Raiders", "Chargers"];
 const nfcTeams = ["Cowboys", "Giants", "Eagles", "Commanders", "Bears", "Lions", "Packers", "Vikings",
                   "Falcons", "Panthers", "Saints", "Buccaneers", "Cardinals", "Rams", "49ers", "Seahawks"];
 
 const players = ["Kinnon", "KJ", "Koby", "Kenzee", "Breena", "Richie", "Sean", "Hudson"];
-
-let afcTeamsShuffled = shuffle([...afcTeams]);
-let nfcTeamsShuffled = shuffle([...nfcTeams]);
 
 function shuffle(array) {
     let currentIndex = array.length, randomIndex;
@@ -36,6 +32,9 @@ function createPlayerDiv(player) {
 }
 
 function fillTeams() {
+    const afcTeamsShuffled = shuffle([...afcTeams]);
+    const nfcTeamsShuffled = shuffle([...nfcTeams]);
+
     players.forEach(player => {
         for (let i = 1; i <= 2; i++) {
             const afcTeam = afcTeamsShuffled.pop();
