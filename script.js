@@ -20,10 +20,12 @@ function createPlayerDiv(player) {
         <div class="player">
             <div><strong>${player}</strong></div>
             <div>
+                <div class="conference-label">AFC Teams</div>
                 <div class="empty-box" id="${player}-afc1"></div>
                 <div class="empty-box" id="${player}-afc2"></div>
             </div>
             <div>
+                <div class="conference-label">NFC Teams</div>
                 <div class="empty-box" id="${player}-nfc1"></div>
                 <div class="empty-box" id="${player}-nfc2"></div>
             </div>
