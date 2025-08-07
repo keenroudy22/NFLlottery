@@ -1,18 +1,10 @@
+
 const rankings = [
   "Eagles", "Chiefs", "Bills", "Ravens", "Lions", "Commanders", "Rams", "Texans",
   "Buccaneers", "Broncos", "Packers", "Vikings", "49ers", "Bengals", "Chargers", "Steelers",
   "Bears", "Seahawks", "Cowboys", "Cardinals", "Patriots", "Jets", "Falcons", "Colts",
   "Panthers", "Titans", "Raiders", "Jaguars", "Dolphins", "Giants", "Saints", "Browns"
 ];
-
-const afcTeams = [
-  "Bills", "Ravens", "Chiefs", "Texans", "Broncos", "Chargers", "Steelers", "Patriots",
-  "Jets", "Colts", "Titans", "Raiders", "Jaguars", "Dolphins", "Browns", "Bengals"
-];
-
-const nfcTeams = rankings.filter(team => !afcTeams.includes(team));
-
-const players = ["Kinnon", "Richie", "xxxxxx", "Kenzee", "Breena", "Mariah", "Dirb", "Sean"];
 
 const teamLogos = {
   "Eagles": "https://a.espncdn.com/i/teamlogos/nfl/500/phi.png",
@@ -49,66 +41,53 @@ const teamLogos = {
   "Browns": "https://a.espncdn.com/i/teamlogos/nfl/500/cle.png"
 };
 
-// Weighted random pick based on rankings
+const players = ["Kinnon", "Richie", "xxxxxx", "Kenzee", "Breena", "Mariah", "Dirb", "Sean"];
+
 function weightedRandomPick(pool) {
   const weightedPool = pool.map(team => ({
     name: team,
-    weight: 33 - rankings.indexOf(team) // higher ranked = higher weight
+    weight: 33 - rankings.indexOf(team)
   }));
-  const totalWeight = weightedPool.reduce((sum, t) => sum + t.weight, 0);
-  let rand = Math.random() * totalWeight;
+  const total = weightedPool.reduce((sum, t) => sum + t.weight, 0);
+  const r = Math.random() * total;
+  let cumulative = 0;
   for (let t of weightedPool) {
-    if (rand < t.weight) return t.name;
-    rand -= t.weight;
+    cumulative += t.weight;
+    if (r < cumulative) return t.name;
   }
 }
 
-// Return just the team logo (no name)
 function displayTeamLogo(teamName) {
-  const logo = teamLogos[teamName] || "";
-  return logo ? `<img src="${logo}" alt="${teamName}" class="team-logo">` : "";
+  const logo = teamLogos[teamName];
+  if (!logo) {
+    return `<div class="empty-logo">${teamName}</div>`;
+  }
+  return `<img src="\${logo}" alt="\${teamName}" class="team-logo">`;
 }
 
-// Build each player card
 function createPlayerDiv(player) {
   return `
     <div class="player">
-      <h3>${player}</h3>
-      <div class="team-row">
-        <div class="empty-box" id="${player}-team1"></div>
-        <div class="empty-box" id="${player}-team2"></div>
-        <div class="empty-box" id="${player}-team3"></div>
-        <div class="empty-box" id="${player}-team4"></div>
-      </div>
+      <div><strong>\${player}</strong></div>
+      <div class="team-row" id="\${player}-teams"></div>
     </div>
   `;
 }
 
-// Assign 2 AFC + 2 NFC teams per player, weighted
-function fillTeams() {
-  let availableAFC = [...afcTeams];
-  let availableNFC = [...nfcTeams];
-
+function assignTeams() {
+  let availableTeams = [...rankings];
   players.forEach(player => {
-    const assigned = [];
-
-    for (let i = 1; i <= 2; i++) {
-      const afcTeam = weightedRandomPick(availableAFC);
-      assigned.push(afcTeam);
-      availableAFC = availableAFC.filter(t => t !== afcTeam);
+    const playerTeams = [];
+    for (let i = 0; i < 4; i++) {
+      const picked = weightedRandomPick(availableTeams);
+      playerTeams.push(picked);
+      availableTeams = availableTeams.filter(team => team !== picked);
     }
 
-    for (let i = 1; i <= 2; i++) {
-      const nfcTeam = weightedRandomPick(availableNFC);
-      assigned.push(nfcTeam);
-      availableNFC = availableNFC.filter(t => t !== nfcTeam);
-    }
-
-    assigned.forEach((team, idx) => {
-      document.getElementById(`${player}-team${idx + 1}`).innerHTML = displayTeamLogo(team);
-    });
+    const logoHTML = playerTeams.map(team => \`<div class="team-box">\${displayTeamLogo(team)}</div>\`).join("");
+    document.getElementById(\`\${player}-teams\`).innerHTML = logoHTML;
   });
 }
 
 document.getElementById("playerContainer").innerHTML = players.map(createPlayerDiv).join("");
-document.getElementById("randomButton").addEventListener("click", fillTeams);
+document.getElementById("randomButton").addEventListener("click", assignTeams);
