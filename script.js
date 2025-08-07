@@ -65,7 +65,7 @@ function weightedRandomPick(pool) {
 
 function logoOnly(teamName) {
   const logo = teamLogos[teamName];
-  return logo ? `<img src="${logo}" alt="${teamName}" class="team-logo-only">` : teamName;
+  return logo ? `<img src="${logo}" alt="${teamName}" class="team-logo-only">` : "";
 }
 
 function createPlayerDiv(player) {
@@ -100,5 +100,6 @@ function fillTeams() {
   });
 }
 
+// Init
 document.getElementById("playerContainer").innerHTML = players.map(createPlayerDiv).join("");
 document.getElementById("randomButton").addEventListener("click", fillTeams);
