@@ -1,43 +1,36 @@
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f2f6fa;
-  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background-color: #f0f4f8;
+  color: #333;
+  text-align: center;
   padding: 20px;
 }
 
 .container {
   max-width: 900px;
-  margin: auto;
-  background: #fff;
+  margin: 0 auto;
+  background: #ffffff;
   padding: 30px;
   border-radius: 10px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
+  color: #333;
   font-size: 2.5rem;
   margin-bottom: 10px;
 }
 
-p {
-  color: #333;
-  margin-bottom: 30px;
-}
-
-.player-block {
+.player {
   margin: 20px 0;
-  padding: 10px;
-  border-top: 1px solid #ccc;
 }
 
 .player-name {
   font-weight: bold;
-  font-size: 1.2rem;
   margin-bottom: 10px;
 }
 
-.team-container {
+.team-boxes {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
@@ -45,12 +38,20 @@ p {
 }
 
 .team-logo {
-  width: 50px;
-  height: 50px;
   border: 2px solid #007bff;
   border-radius: 8px;
-  padding: 5px;
-  background: #f0f8ff;
+  padding: 10px;
+  background: white;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.team-logo img {
+  max-width: 100%;
+  max-height: 100%;
 }
 
 button {
@@ -58,7 +59,7 @@ button {
   color: white;
   border: none;
   padding: 12px 25px;
-  font-size: 1rem;
+  font-size: 1.2rem;
   border-radius: 8px;
   cursor: pointer;
   margin-top: 20px;
