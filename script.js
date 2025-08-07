@@ -36,7 +36,7 @@ const nfcTeams = [
     { name: "Packers B", rank: 16 }, // Just a filler to make 16 teams
 ];
 
-const players = ["Kinnon", "KJ", "Koby", "Kenzee", "Breena", "Richie", "Sean", "Hudson"];
+const players = ["Kinnon", "KJ", "xxxxxx", "Kenzee", "Breena", "Richie", "Sean", "Mariah"];
 
 function weightedRandomPick(pool) {
     const weightedPool = pool.map(team => ({
