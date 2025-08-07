@@ -1,6 +1,6 @@
 body {
   font-family: 'Arial', sans-serif;
-  background-color: #f4f6f8;
+  background-color: #f0f4f8;
   color: #333;
   text-align: center;
   padding: 20px;
@@ -9,52 +9,60 @@ body {
 .container {
   max-width: 900px;
   margin: 0 auto;
-  background: #fff;
+  background: #ffffff;
   padding: 30px;
   border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
   color: #333;
   font-size: 2.5rem;
-  margin-bottom: 10px;
-}
-
-p {
-  margin-bottom: 30px;
-  font-size: 1rem;
-}
-
-.player {
-  margin: 20px 0;
-  padding: 15px;
-  border-bottom: 1px solid #ccc;
-}
-
-.player-name {
   font-weight: bold;
-  font-size: 1.2rem;
-  margin-bottom: 10px;
 }
 
-.team-boxes {
+.description {
+  font-size: 0.95rem;
+  margin-bottom: 30px;
+  color: #666;
+}
+
+.player-card {
+  background: #f9f9f9;
+  margin: 20px 0;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.player-card h2 {
+  margin-bottom: 15px;
+  font-size: 1.4rem;
+}
+
+.team-group {
   display: flex;
   justify-content: center;
-  gap: 15px;
+  gap: 20px;
   flex-wrap: wrap;
 }
 
-.team-logo {
+.team-box {
+  width: 60px;
+  height: 60px;
+  background-color: #e9f0ff;
   border: 2px solid #007bff;
-  background: #e6f0ff;
-  padding: 10px;
   border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.team-logo img {
-  height: 50px;
-  width: 50px;
+.team-logo-only {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
 }
 
 button {
@@ -62,12 +70,31 @@ button {
   color: white;
   border: none;
   padding: 12px 25px;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   border-radius: 8px;
   cursor: pointer;
+  margin-top: 20px;
   transition: background-color 0.3s ease;
 }
 
 button:hover {
   background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .team-group {
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .team-box {
+    width: 50px;
+    height: 50px;
+  }
+
+  .team-logo-only {
+    width: 35px;
+    height: 35px;
+  }
 }
