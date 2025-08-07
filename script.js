@@ -1,3 +1,4 @@
+const players = ["Kinnon", "Richie", "xxxxxx", "Kenzee", "Breena", "Mariah", "Dirb", "Sean"];
 
 const rankings = [
   "Eagles", "Chiefs", "Bills", "Ravens", "Lions", "Commanders", "Rams", "Texans",
@@ -5,8 +6,6 @@ const rankings = [
   "Bears", "Seahawks", "Cowboys", "Cardinals", "Patriots", "Jets", "Falcons", "Colts",
   "Panthers", "Titans", "Raiders", "Jaguars", "Dolphins", "Giants", "Saints", "Browns"
 ];
-
-const players = ["Kinnon", "Richie", "xxxxxx", "Kenzee", "Breena", "Mariah", "Dirb", "Sean"];
 
 const teamLogos = {
   "Eagles": "https://a.espncdn.com/i/teamlogos/nfl/500/phi.png",
@@ -43,46 +42,50 @@ const teamLogos = {
   "Browns": "https://a.espncdn.com/i/teamlogos/nfl/500/cle.png"
 };
 
-function weightedRandomPick(pool) {
-  const weightedPool = pool.map(team => ({
-    name: team,
-    weight: 33 - rankings.indexOf(team)
-  }));
-  const total = weightedPool.reduce((sum, t) => sum + t.weight, 0);
-  const r = Math.random() * total;
-  let cumulative = 0;
-  for (let t of weightedPool) {
-    cumulative += t.weight;
-    if (r < cumulative) return t.name;
-  }
-}
-
-function createPlayerHTML(player, teams) {
-  const logos = teams.map(team =>
-    `<img src="${teamLogos[team]}" alt="${team}" class="team-logo" title="${team}">`
-  ).join("");
-  return `
-    <div class="player">
-      <div class="player-name">${player}</div>
-      <div class="team-row">${logos}</div>
-    </div>
-  `;
-}
-
 function assignTeams() {
-  let availableTeams = [...rankings];
-  const container = document.getElementById("playerContainer");
+  const availableTeams = [...rankings];
+  const playerTeams = {};
+
+  // Assign 4 teams to each player
+  players.forEach(player => {
+    playerTeams[player] = [];
+    for (let i = 0; i < 4; i++) {
+      const randIndex = Math.floor(Math.random() * availableTeams.length);
+      const selected = availableTeams.splice(randIndex, 1)[0];
+      playerTeams[player].push(selected);
+    }
+  });
+
+  displayTeams(playerTeams);
+}
+
+function displayTeams(data) {
+  const container = document.getElementById("playersContainer");
   container.innerHTML = "";
 
-  players.forEach(player => {
-    const playerTeams = [];
-    for (let i = 0; i < 4; i++) {
-      const pick = weightedRandomPick(availableTeams);
-      playerTeams.push(pick);
-      availableTeams = availableTeams.filter(t => t !== pick);
-    }
-    container.innerHTML += createPlayerHTML(player, playerTeams);
-  });
+  for (const [player, teams] of Object.entries(data)) {
+    const block = document.createElement("div");
+    block.className = "player-block";
+
+    const name = document.createElement("div");
+    name.className = "player-name";
+    name.textContent = player;
+
+    const teamRow = document.createElement("div");
+    teamRow.className = "team-container";
+
+    teams.forEach(team => {
+      const img = document.createElement("img");
+      img.src = teamLogos[team];
+      img.alt = team;
+      img.className = "team-logo";
+      teamRow.appendChild(img);
+    });
+
+    block.appendChild(name);
+    block.appendChild(teamRow);
+    container.appendChild(block);
+  }
 }
 
 document.getElementById("assignButton").addEventListener("click", assignTeams);
