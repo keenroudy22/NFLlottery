@@ -34,7 +34,7 @@ const teamLogos = {
   "Bears": "https://a.espncdn.com/i/teamlogos/nfl/500/chi.png",
   "Seahawks": "https://a.espncdn.com/i/teamlogos/nfl/500/sea.png",
   "Cowboys": "https://a.espncdn.com/i/teamlogos/nfl/500/dal.png",
-  "Cardinals": "https://a.espncdn.com/i/teamlogos/nfl/500/ari.png",
+  "Cardinals": "https://a.espncdn.com/i/teamlogos/nfl/500/ari.png", // ✅ fixed
   "Patriots": "https://a.espncdn.com/i/teamlogos/nfl/500/ne.png",
   "Jets": "https://a.espncdn.com/i/teamlogos/nfl/500/nyj.png",
   "Falcons": "https://a.espncdn.com/i/teamlogos/nfl/500/atl.png",
@@ -87,19 +87,4 @@ function fillTeams() {
   let availableNFC = [...nfcTeams];
 
   players.forEach(player => {
-    for (let i = 1; i <= 2; i++) {
-      const afcTeam = weightedRandomPick(availableAFC);
-      const nfcTeam = weightedRandomPick(availableNFC);
-
-      availableAFC = availableAFC.filter(t => t !== afcTeam);
-      availableNFC = availableNFC.filter(t => t !== nfcTeam);
-
-      document.getElementById(`${player}-afc${i}`).innerHTML = logoOnly(afcTeam);
-      document.getElementById(`${player}-nfc${i}`).innerHTML = logoOnly(nfcTeam);
-    }
-  });
-}
-
-// Init
-document.getElementById("playerContainer").innerHTML = players.map(createPlayerDiv).join("");
-document.getElementById("randomButton").addEventListener("click", fillTeams);
+    for (let i = 1; i <=
