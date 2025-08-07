@@ -59,35 +59,34 @@ function weightedRandomPick(pool) {
 
 function displayTeamLogo(teamName) {
   const logo = teamLogos[teamName];
-  if (!logo) {
-    return `<div class="empty-logo">${teamName}</div>`;
-  }
-  return `<img src="\${logo}" alt="\${teamName}" class="team-logo">`;
+  return logo ? \`<img src="\${logo}" alt="\${teamName}" class="team-logo">\` : "";
 }
 
 function createPlayerDiv(player) {
-  return `
+  return \`
     <div class="player">
       <div><strong>\${player}</strong></div>
-      <div class="team-row" id="\${player}-teams"></div>
+      <div class="team-boxes" id="\${player}-teams"></div>
     </div>
-  `;
+  \`;
 }
 
-function assignTeams() {
+function fillTeams() {
   let availableTeams = [...rankings];
+
   players.forEach(player => {
-    const playerTeams = [];
+    const assigned = [];
+
     for (let i = 0; i < 4; i++) {
-      const picked = weightedRandomPick(availableTeams);
-      playerTeams.push(picked);
-      availableTeams = availableTeams.filter(team => team !== picked);
+      const team = weightedRandomPick(availableTeams);
+      assigned.push(team);
+      availableTeams = availableTeams.filter(t => t !== team);
     }
 
-    const logoHTML = playerTeams.map(team => \`<div class="team-box">\${displayTeamLogo(team)}</div>\`).join("");
-    document.getElementById(\`\${player}-teams\`).innerHTML = logoHTML;
+    const playerDiv = document.getElementById(\`\${player}-teams\`);
+    playerDiv.innerHTML = assigned.map(displayTeamLogo).join("");
   });
 }
 
 document.getElementById("playerContainer").innerHTML = players.map(createPlayerDiv).join("");
-document.getElementById("randomButton").addEventListener("click", assignTeams);
+document.getElementById("randomButton").addEventListener("click", fillTeams);
