@@ -65,12 +65,12 @@ function weightedRandomPick(pool) {
 
 function logoOnly(teamName) {
   const logo = teamLogos[teamName];
-  return logo ? `<img src="${logo}" alt="${teamName}" class="team-logo-only">` : teamName;
+  return logo ? `<img src="${logo}" alt="${teamName}" class="team-logo-only">` : "";
 }
 
 function createPlayerDiv(player) {
   return `
-    <div class="player-card" id="card-${player}">
+    <div class="player-card">
       <h2>${player}</h2>
       <div class="team-group">
         <div id="${player}-afc1" class="team-box"></div>
@@ -98,60 +98,8 @@ function fillTeams() {
       document.getElementById(`${player}-nfc${i}`).innerHTML = logoOnly(nfcTeam);
     }
   });
-
-  // Reset tracker
-  document.getElementById("winnerResult").innerHTML = "";
-  document.querySelectorAll(".player-card").forEach(card => card.classList.remove("winner"));
-}
-
-function populateWinnerDropdown() {
-  const select = document.getElementById("winnerTeamSelect");
-  select.innerHTML = `<option value="">-- Select Winning Team --</option>`;
-  Object.keys(teamLogos).forEach(team => {
-    const option = document.createElement("option");
-    option.value = team;
-    option.textContent = team;
-    select.appendChild(option);
-  });
-}
-
-function markWinner() {
-  const winnerTeam = document.getElementById("winnerTeamSelect").value;
-  if (!winnerTeam) return;
-
-  let winnerPlayer = null;
-
-  // Reset previous highlights
-  document.querySelectorAll(".player-card").forEach(el => el.classList.remove("winner"));
-
-  // Find the winner
-  players.forEach(player => {
-    for (let i = 1; i <= 2; i++) {
-      const afcEl = document.getElementById(`${player}-afc${i}`);
-      const nfcEl = document.getElementById(`${player}-nfc${i}`);
-
-      const teamFound =
-        afcEl.innerHTML.includes(teamLogos[winnerTeam]) ||
-        nfcEl.innerHTML.includes(teamLogos[winnerTeam]);
-
-      if (teamFound) {
-        winnerPlayer = player;
-        document.getElementById(`card-${player}`).classList.add("winner");
-      }
-    }
-  });
-
-  if (winnerPlayer) {
-    const losers = players.filter(p => p !== winnerPlayer);
-    document.getElementById("winnerResult").innerHTML =
-      `<span>${winnerPlayer} WINS! 🏆</span><br>Each player owes them $15:<br><strong>${losers.join(", ")}</strong>`;
-  } else {
-    document.getElementById("winnerResult").innerText = "No player owns that team.";
-  }
 }
 
 // Init
 document.getElementById("playerContainer").innerHTML = players.map(createPlayerDiv).join("");
 document.getElementById("randomButton").addEventListener("click", fillTeams);
-document.getElementById("markWinnerBtn").addEventListener("click", markWinner);
-populateWinnerDropdown();
