@@ -7,85 +7,96 @@ const rankings = [
   "Panthers", "Titans", "Raiders", "Jaguars", "Dolphins", "Giants", "Saints", "Browns"
 ];
 
-const teamLogos = {
-  "Eagles": "https://a.espncdn.com/i/teamlogos/nfl/500/phi.png",
-  "Chiefs": "https://a.espncdn.com/i/teamlogos/nfl/500/kc.png",
-  "Bills": "https://a.espncdn.com/i/teamlogos/nfl/500/buf.png",
-  "Ravens": "https://a.espncdn.com/i/teamlogos/nfl/500/bal.png",
-  "Lions": "https://a.espncdn.com/i/teamlogos/nfl/500/det.png",
-  "Commanders": "https://a.espncdn.com/i/teamlogos/nfl/500/wsh.png",
-  "Rams": "https://a.espncdn.com/i/teamlogos/nfl/500/lar.png",
-  "Texans": "https://a.espncdn.com/i/teamlogos/nfl/500/hou.png",
-  "Buccaneers": "https://a.espncdn.com/i/teamlogos/nfl/500/tb.png",
-  "Broncos": "https://a.espncdn.com/i/teamlogos/nfl/500/den.png",
-  "Packers": "https://a.espncdn.com/i/teamlogos/nfl/500/gb.png",
-  "Vikings": "https://a.espncdn.com/i/teamlogos/nfl/500/min.png",
-  "49ers": "https://a.espncdn.com/i/teamlogos/nfl/500/sf.png",
-  "Bengals": "https://a.espncdn.com/i/teamlogos/nfl/500/cin.png",
-  "Chargers": "https://a.espncdn.com/i/teamlogos/nfl/500/lac.png",
-  "Steelers": "https://a.espncdn.com/i/teamlogos/nfl/500/pit.png",
-  "Bears": "https://a.espncdn.com/i/teamlogos/nfl/500/chi.png",
-  "Seahawks": "https://a.espncdn.com/i/teamlogos/nfl/500/sea.png",
-  "Cowboys": "https://a.espncdn.com/i/teamlogos/nfl/500/dal.png",
-  "Cardinals": "https://a.espncdn.com/i/teamlogos/nfl/500/ari.png",
-  "Patriots": "https://a.espncdn.com/i/teamlogos/nfl/500/ne.png",
-  "Jets": "https://a.espncdn.com/i/teamlogos/nfl/500/nyj.png",
-  "Falcons": "https://a.espncdn.com/i/teamlogos/nfl/500/atl.png",
-  "Colts": "https://a.espncdn.com/i/teamlogos/nfl/500/ind.png",
-  "Panthers": "https://a.espncdn.com/i/teamlogos/nfl/500/car.png",
-  "Titans": "https://a.espncdn.com/i/teamlogos/nfl/500/ten.png",
-  "Raiders": "https://a.espncdn.com/i/teamlogos/nfl/500/lv.png",
-  "Jaguars": "https://a.espncdn.com/i/teamlogos/nfl/500/jax.png",
-  "Dolphins": "https://a.espncdn.com/i/teamlogos/nfl/500/mia.png",
-  "Giants": "https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png",
-  "Saints": "https://a.espncdn.com/i/teamlogos/nfl/500/no.png",
-  "Browns": "https://a.espncdn.com/i/teamlogos/nfl/500/cle.png"
-};
+const teamLogos = {};
+rankings.forEach(team => {
+  const teamName = team.toLowerCase()
+    .replace(" ", "")
+    .replace("49ers", "sf")
+    .replace("commanders", "wsh")
+    .replace("patriots", "ne")
+    .replace("jets", "nyj")
+    .replace("giants", "nyg")
+    .replace("saints", "no")
+    .replace("browns", "cle")
+    .replace("titans", "ten")
+    .replace("chargers", "lac")
+    .replace("raiders", "lv")
+    .replace("colts", "ind")
+    .replace("bears", "chi")
+    .replace("packers", "gb")
+    .replace("dolphins", "mia")
+    .replace("falcons", "atl")
+    .replace("steelers", "pit")
+    .replace("ravens", "bal")
+    .replace("bengals", "cin")
+    .replace("bills", "buf")
+    .replace("chiefs", "kc")
+    .replace("broncos", "den")
+    .replace("texans", "hou")
+    .replace("lions", "det")
+    .replace("jaguars", "jax")
+    .replace("panthers", "car")
+    .replace("buccaneers", "tb")
+    .replace("cowboys", "dal")
+    .replace("seahawks", "sea")
+    .replace("rams", "lar")
+    .replace("vikings", "min")
+    .replace("eagles", "phi")
+    .replace("49ers", "sf");
 
-function assignTeams() {
-  const availableTeams = [...rankings];
-  const playerTeams = {};
+  teamLogos[team] = `https://a.espncdn.com/i/teamlogos/nfl/500/${teamName}.png`;
+});
 
-  // Assign 4 teams to each player
-  players.forEach(player => {
-    playerTeams[player] = [];
-    for (let i = 0; i < 4; i++) {
-      const randIndex = Math.floor(Math.random() * availableTeams.length);
-      const selected = availableTeams.splice(randIndex, 1)[0];
-      playerTeams[player].push(selected);
-    }
-  });
-
-  displayTeams(playerTeams);
-}
-
-function displayTeams(data) {
-  const container = document.getElementById("playersContainer");
-  container.innerHTML = "";
-
-  for (const [player, teams] of Object.entries(data)) {
-    const block = document.createElement("div");
-    block.className = "player-block";
-
-    const name = document.createElement("div");
-    name.className = "player-name";
-    name.textContent = player;
-
-    const teamRow = document.createElement("div");
-    teamRow.className = "team-container";
-
-    teams.forEach(team => {
-      const img = document.createElement("img");
-      img.src = teamLogos[team];
-      img.alt = team;
-      img.className = "team-logo";
-      teamRow.appendChild(img);
-    });
-
-    block.appendChild(name);
-    block.appendChild(teamRow);
-    container.appendChild(block);
+function weightedRandomPick(pool) {
+  const weightedPool = pool.map(team => ({
+    name: team,
+    weight: 33 - rankings.indexOf(team)
+  }));
+  const total = weightedPool.reduce((sum, t) => sum + t.weight, 0);
+  const r = Math.random() * total;
+  let cumulative = 0;
+  for (let t of weightedPool) {
+    cumulative += t.weight;
+    if (r < cumulative) return t.name;
   }
 }
 
-document.getElementById("assignButton").addEventListener("click", assignTeams);
+function assignTeams() {
+  const usedTeams = new Set();
+  const container = document.getElementById("playerContainer");
+  container.innerHTML = "";
+
+  players.forEach(player => {
+    const playerDiv = document.createElement("div");
+    playerDiv.className = "player";
+
+    const name = document.createElement("div");
+    name.className = "player-name";
+    name.innerText = player;
+    playerDiv.appendChild(name);
+
+    const teamWrapper = document.createElement("div");
+    teamWrapper.className = "team-boxes";
+
+    let assigned = 0;
+    while (assigned < 4) {
+      const pick = weightedRandomPick(rankings);
+      if (!usedTeams.has(pick)) {
+        usedTeams.add(pick);
+        const logoDiv = document.createElement("div");
+        logoDiv.className = "team-logo";
+        const img = document.createElement("img");
+        img.src = teamLogos[pick];
+        img.alt = pick;
+        logoDiv.appendChild(img);
+        teamWrapper.appendChild(logoDiv);
+        assigned++;
+      }
+    }
+
+    playerDiv.appendChild(teamWrapper);
+    container.appendChild(playerDiv);
+  });
+}
+
+document.getElementById("randomButton").addEventListener("click", assignTeams);
