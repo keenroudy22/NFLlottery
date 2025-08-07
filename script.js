@@ -63,13 +63,8 @@ function weightedRandomPick(pool) {
   }
 }
 
-function logoOnly(teamName) {
-  const logo = teamLogos[teamName];
-  return logo ? <img src="${logo}" alt="${teamName}" class="team-logo-only"> : "";
-}
-
 function createPlayerDiv(player) {
-  return 
+  return `
     <div class="player-card">
       <h2>${player}</h2>
       <div class="team-group">
@@ -79,7 +74,12 @@ function createPlayerDiv(player) {
         <div id="${player}-nfc2" class="team-box"></div>
       </div>
     </div>
-  ;
+  `;
+}
+
+function logoOnly(teamName) {
+  const logo = teamLogos[teamName];
+  return logo ? `<img src="${logo}" alt="${teamName}" class="team-logo-only" />` : "";
 }
 
 function fillTeams() {
@@ -94,12 +94,14 @@ function fillTeams() {
       availableAFC = availableAFC.filter(t => t !== afcTeam);
       availableNFC = availableNFC.filter(t => t !== nfcTeam);
 
-      document.getElementById(${player}-afc${i}).innerHTML = logoOnly(afcTeam);
-      document.getElementById(${player}-nfc${i}).innerHTML = logoOnly(nfcTeam);
+      document.getElementById(`${player}-afc${i}`).innerHTML = logoOnly(afcTeam);
+      document.getElementById(`${player}-nfc${i}`).innerHTML = logoOnly(nfcTeam);
     }
   });
 }
 
-// Init
-document.getElementById("playerContainer").innerHTML = players.map(createPlayerDiv).join("");
-document.getElementById("randomButton").addEventListener("click", fillTeams);
+// Pre-load names and team boxes
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("playerContainer").innerHTML = players.map(createPlayerDiv).join("");
+  document.getElementById("randomButton").addEventListener("click", fillTeams);
+});
