@@ -7,44 +7,44 @@ const rankings = [
   "Panthers", "Titans", "Raiders", "Jaguars", "Dolphins", "Giants", "Saints", "Browns"
 ];
 
+const teamAbbr = {
+  "49ers": "sf",
+  "Commanders": "wsh",
+  "Patriots": "ne",
+  "Jets": "nyj",
+  "Giants": "nyg",
+  "Saints": "no",
+  "Browns": "cle",
+  "Titans": "ten",
+  "Chargers": "lac",
+  "Raiders": "lv",
+  "Colts": "ind",
+  "Bears": "chi",
+  "Packers": "gb",
+  "Dolphins": "mia",
+  "Falcons": "atl",
+  "Steelers": "pit",
+  "Ravens": "bal",
+  "Bengals": "cin",
+  "Bills": "buf",
+  "Chiefs": "kc",
+  "Broncos": "den",
+  "Texans": "hou",
+  "Lions": "det",
+  "Jaguars": "jax",
+  "Panthers": "car",
+  "Buccaneers": "tb",
+  "Cowboys": "dal",
+  "Seahawks": "sea",
+  "Rams": "lar",
+  "Vikings": "min",
+  "Eagles": "phi"
+};
+
 const teamLogos = {};
 rankings.forEach(team => {
-  const teamName = team.toLowerCase()
-    .replace(" ", "")
-    .replace("49ers", "sf")
-    .replace("commanders", "wsh")
-    .replace("patriots", "ne")
-    .replace("jets", "nyj")
-    .replace("giants", "nyg")
-    .replace("saints", "no")
-    .replace("browns", "cle")
-    .replace("titans", "ten")
-    .replace("chargers", "lac")
-    .replace("raiders", "lv")
-    .replace("colts", "ind")
-    .replace("bears", "chi")
-    .replace("packers", "gb")
-    .replace("dolphins", "mia")
-    .replace("falcons", "atl")
-    .replace("steelers", "pit")
-    .replace("ravens", "bal")
-    .replace("bengals", "cin")
-    .replace("bills", "buf")
-    .replace("chiefs", "kc")
-    .replace("broncos", "den")
-    .replace("texans", "hou")
-    .replace("lions", "det")
-    .replace("jaguars", "jax")
-    .replace("panthers", "car")
-    .replace("buccaneers", "tb")
-    .replace("cowboys", "dal")
-    .replace("seahawks", "sea")
-    .replace("rams", "lar")
-    .replace("vikings", "min")
-    .replace("eagles", "phi")
-    .replace("49ers", "sf");
-
-  teamLogos[team] = `https://a.espncdn.com/i/teamlogos/nfl/500/${teamName}.png`;
+  const abbr = teamAbbr[team] || team.toLowerCase().replace(/\s/g, '');
+  teamLogos[team] = `https://a.espncdn.com/i/teamlogos/nfl/500/${abbr}.png`;
 });
 
 function weightedRandomPick(pool) {
