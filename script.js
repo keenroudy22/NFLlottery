@@ -12,7 +12,7 @@ const afcTeams = [
 
 const nfcTeams = rankings.filter(team => !afcTeams.includes(team));
 
-const players = ["Kinnon", "KJ", "Koby", "Kenzee", "Breena", "Richie", "Sean", "Hudson"];
+const players = ["Kinnon", "Richie", "xxxxxx", "Kenzee", "Breena", "Mariah", "Dirb", "Sean"];
 
 const teamLogos = {
   "Eagles": "https://a.espncdn.com/i/teamlogos/nfl/500/phi.png",
