@@ -57,6 +57,15 @@ h1 {
     font-size: 1.2rem;
     color: #007bff;
     border-radius: 5px;
+    gap: 8px;
+    text-align: left;
+}
+
+.team-logo {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+    margin-right: 8px;
 }
 
 button {
@@ -82,5 +91,9 @@ button:hover {
 
     .player div {
         margin: 10px 0;
+    }
+
+    .empty-box {
+        width: 100%;
     }
 }
