@@ -9,18 +9,13 @@
 <body>
   <div class="container">
     <h1>NFL Lottery</h1>
-    <p>Each player is randomly assigned 4 NFL teams. If one of your teams hits the winning number & wins the game, the others owe you $15. Good luck!</p>
-    <div id="playerContainer" class="player-grid"></div>
+    <p class="description">
+      Each player is randomly assigned 4 NFL teams. If one of your teams hits the winning number & wins the game, the others owe you $15. Good luck!
+    </p>
+    <div id="playerContainer"></div>
     <button id="randomButton">Assign Teams</button>
   </div>
-  <div class="tracker">
-  <h3>🏆 Weekly Winner Tracker</h3>
-  <select id="winnerTeamSelect">
-    <option value="">-- Select Winning Team --</option>
-  </select>
-  <button id="markWinnerBtn">Mark Winner</button>
-  <div id="winnerResult"></div>
-</div>
+
   <script src="script.js"></script>
 </body>
 </html>
