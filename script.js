@@ -34,7 +34,7 @@ const teamLogos = {
   "Bears": "https://a.espncdn.com/i/teamlogos/nfl/500/chi.png",
   "Seahawks": "https://a.espncdn.com/i/teamlogos/nfl/500/sea.png",
   "Cowboys": "https://a.espncdn.com/i/teamlogos/nfl/500/dal.png",
-  "Cardinals": "https://a.espncdn.com/i/teamlogos/nfl/500/ari.png", // ✅ fixed
+  "Cardinals": "https://a.espncdn.com/i/teamlogos/nfl/500/ari.png",
   "Patriots": "https://a.espncdn.com/i/teamlogos/nfl/500/ne.png",
   "Jets": "https://a.espncdn.com/i/teamlogos/nfl/500/nyj.png",
   "Falcons": "https://a.espncdn.com/i/teamlogos/nfl/500/atl.png",
@@ -65,11 +65,11 @@ function weightedRandomPick(pool) {
 
 function logoOnly(teamName) {
   const logo = teamLogos[teamName];
-  return logo ? `<img src="${logo}" alt="${teamName}" class="team-logo-only">` : "";
+  return logo ? <img src="${logo}" alt="${teamName}" class="team-logo-only"> : "";
 }
 
 function createPlayerDiv(player) {
-  return `
+  return 
     <div class="player-card">
       <h2>${player}</h2>
       <div class="team-group">
@@ -79,7 +79,7 @@ function createPlayerDiv(player) {
         <div id="${player}-nfc2" class="team-box"></div>
       </div>
     </div>
-  `;
+  ;
 }
 
 function fillTeams() {
@@ -87,4 +87,19 @@ function fillTeams() {
   let availableNFC = [...nfcTeams];
 
   players.forEach(player => {
-    for (let i = 1; i <=
+    for (let i = 1; i <= 2; i++) {
+      const afcTeam = weightedRandomPick(availableAFC);
+      const nfcTeam = weightedRandomPick(availableNFC);
+
+      availableAFC = availableAFC.filter(t => t !== afcTeam);
+      availableNFC = availableNFC.filter(t => t !== nfcTeam);
+
+      document.getElementById(${player}-afc${i}).innerHTML = logoOnly(afcTeam);
+      document.getElementById(${player}-nfc${i}).innerHTML = logoOnly(nfcTeam);
+    }
+  });
+}
+
+// Init
+document.getElementById("playerContainer").innerHTML = players.map(createPlayerDiv).join("");
+document.getElementById("randomButton").addEventListener("click", fillTeams);
