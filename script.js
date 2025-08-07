@@ -1,3 +1,6 @@
+
+const players = ["Kinnon", "Richie", "xxxxxx", "Kenzee", "Breena", "Mariah", "Dirb", "Sean"];
+
 const rankings = [
   "Eagles", "Chiefs", "Bills", "Ravens", "Lions", "Commanders", "Rams", "Texans",
   "Buccaneers", "Broncos", "Packers", "Vikings", "49ers", "Bengals", "Chargers", "Steelers",
@@ -11,8 +14,6 @@ const afcTeams = [
 ];
 
 const nfcTeams = rankings.filter(team => !afcTeams.includes(team));
-
-const players = ["Richie", "Keen", "xxxxxx", "Kenzee", "Breena", "Mariah", "Dirb", "Sean"];
 
 const teamLogos = {
   "Eagles": "https://a.espncdn.com/i/teamlogos/nfl/500/phi.png",
@@ -63,6 +64,11 @@ function weightedRandomPick(pool) {
   }
 }
 
+function logoOnly(teamName) {
+  const logo = teamLogos[teamName];
+  return logo ? `<img src="${logo}" alt="${teamName}" class="team-logo-only">` : "";
+}
+
 function createPlayerDiv(player) {
   return `
     <div class="player-card">
@@ -75,11 +81,6 @@ function createPlayerDiv(player) {
       </div>
     </div>
   `;
-}
-
-function logoOnly(teamName) {
-  const logo = teamLogos[teamName];
-  return logo ? `<img src="${logo}" alt="${teamName}" class="team-logo-only" />` : "";
 }
 
 function fillTeams() {
@@ -100,7 +101,6 @@ function fillTeams() {
   });
 }
 
-// Pre-load names and team boxes
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("playerContainer").innerHTML = players.map(createPlayerDiv).join("");
   document.getElementById("randomButton").addEventListener("click", fillTeams);
