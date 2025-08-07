@@ -6,8 +6,8 @@ const rankings = [
 ];
 
 const afcTeams = [
-  "Bills", "Ravens", "Chiefs", "Texans", "Broncos", "Chargers", "Steelers",
-  "Patriots", "Jets", "Colts", "Titans", "Raiders", "Jaguars", "Dolphins", "Browns"
+  "Bills", "Ravens", "Chiefs", "Texans", "Broncos", "Chargers", "Steelers", "Patriots",
+  "Jets", "Colts", "Titans", "Raiders", "Jaguars", "Dolphins", "Browns", "Bengals"
 ];
 
 const nfcTeams = rankings.filter(team => !afcTeams.includes(team));
@@ -49,57 +49,66 @@ const teamLogos = {
   "Browns": "https://a.espncdn.com/i/teamlogos/nfl/500/cle.png"
 };
 
+// Weighted random pick based on rankings
 function weightedRandomPick(pool) {
   const weightedPool = pool.map(team => ({
     name: team,
-    weight: 33 - rankings.indexOf(team)
+    weight: 33 - rankings.indexOf(team) // higher ranked = higher weight
   }));
-  const total = weightedPool.reduce((sum, t) => sum + t.weight, 0);
-  const r = Math.random() * total;
-  let cumulative = 0;
+  const totalWeight = weightedPool.reduce((sum, t) => sum + t.weight, 0);
+  let rand = Math.random() * totalWeight;
   for (let t of weightedPool) {
-    cumulative += t.weight;
-    if (r < cumulative) return t.name;
+    if (rand < t.weight) return t.name;
+    rand -= t.weight;
   }
 }
 
-function logoOnly(teamName) {
-  const logo = teamLogos[teamName];
-  return logo ? `<img src="${logo}" alt="${teamName}" class="team-logo-only">` : "";
+// Return just the team logo (no name)
+function displayTeamLogo(teamName) {
+  const logo = teamLogos[teamName] || "";
+  return logo ? `<img src="${logo}" alt="${teamName}" class="team-logo">` : "";
 }
 
+// Build each player card
 function createPlayerDiv(player) {
   return `
-    <div class="player-card">
-      <h2>${player}</h2>
-      <div class="team-group">
-        <div id="${player}-afc1" class="team-box"></div>
-        <div id="${player}-afc2" class="team-box"></div>
-        <div id="${player}-nfc1" class="team-box"></div>
-        <div id="${player}-nfc2" class="team-box"></div>
+    <div class="player">
+      <h3>${player}</h3>
+      <div class="team-row">
+        <div class="empty-box" id="${player}-team1"></div>
+        <div class="empty-box" id="${player}-team2"></div>
+        <div class="empty-box" id="${player}-team3"></div>
+        <div class="empty-box" id="${player}-team4"></div>
       </div>
     </div>
   `;
 }
 
+// Assign 2 AFC + 2 NFC teams per player, weighted
 function fillTeams() {
   let availableAFC = [...afcTeams];
   let availableNFC = [...nfcTeams];
 
   players.forEach(player => {
+    const assigned = [];
+
     for (let i = 1; i <= 2; i++) {
       const afcTeam = weightedRandomPick(availableAFC);
-      const nfcTeam = weightedRandomPick(availableNFC);
-
+      assigned.push(afcTeam);
       availableAFC = availableAFC.filter(t => t !== afcTeam);
-      availableNFC = availableNFC.filter(t => t !== nfcTeam);
-
-      document.getElementById(`${player}-afc${i}`).innerHTML = logoOnly(afcTeam);
-      document.getElementById(`${player}-nfc${i}`).innerHTML = logoOnly(nfcTeam);
     }
+
+    for (let i = 1; i <= 2; i++) {
+      const nfcTeam = weightedRandomPick(availableNFC);
+      assigned.push(nfcTeam);
+      availableNFC = availableNFC.filter(t => t !== nfcTeam);
+    }
+
+    assigned.forEach((team, idx) => {
+      document.getElementById(`${player}-team${idx + 1}`).innerHTML = displayTeamLogo(team);
+    });
   });
 }
 
-// Init
 document.getElementById("playerContainer").innerHTML = players.map(createPlayerDiv).join("");
 document.getElementById("randomButton").addEventListener("click", fillTeams);
