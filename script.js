@@ -1,94 +1,108 @@
+const rankings = [
+  "Eagles", "Chiefs", "Bills", "Ravens", "Lions", "Commanders", "Rams", "Texans",
+  "Buccaneers", "Broncos", "Packers", "Vikings", "49ers", "Bengals", "Chargers", "Steelers",
+  "Bears", "Seahawks", "Cowboys", "Cardinals", "Patriots", "Jets", "Falcons", "Colts",
+  "Panthers", "Titans", "Raiders", "Jaguars", "Dolphins", "Giants", "Saints", "Browns"
+];
+
 const afcTeams = [
-    { name: "Eagles", rank: 1 },
-    { name: "Ravens", rank: 2 },
-    { name: "Bills", rank: 3 },
-    { name: "Chiefs", rank: 4 },
-    { name: "Dolphins", rank: 5 },
-    { name: "Bengals", rank: 6 },
-    { name: "Jaguars", rank: 7 },
-    { name: "Jets", rank: 8 },
-    { name: "Texans", rank: 9 },
-    { name: "Steelers", rank: 10 },
-    { name: "Chargers", rank: 11 },
-    { name: "Colts", rank: 12 },
-    { name: "Patriots", rank: 13 },
-    { name: "Titans", rank: 14 },
-    { name: "Raiders", rank: 15 },
-    { name: "Broncos", rank: 16 },
+  "Bills", "Ravens", "Chiefs", "Texans", "Broncos", "Chargers", "Steelers",
+  "Patriots", "Jets", "Colts", "Titans", "Raiders", "Jaguars", "Dolphins", "Browns"
 ];
 
-const nfcTeams = [
-    { name: "Lions", rank: 1 },
-    { name: "Cowboys", rank: 2 },
-    { name: "49ers", rank: 3 },
-    { name: "Rams", rank: 4 },
-    { name: "Packers", rank: 5 },
-    { name: "Vikings", rank: 6 },
-    { name: "Commanders", rank: 7 },
-    { name: "Buccaneers", rank: 8 },
-    { name: "Seahawks", rank: 9 },
-    { name: "Falcons", rank: 10 },
-    { name: "Bears", rank: 11 },
-    { name: "Saints", rank: 12 },
-    { name: "Giants", rank: 13 },
-    { name: "Panthers", rank: 14 },
-    { name: "Cardinals", rank: 15 },
-    { name: "Packers B", rank: 16 }, // Just a filler to make 16 teams
-];
+const nfcTeams = rankings.filter(team => !afcTeams.includes(team));
 
-const players = ["Kinnon", "KJ", "xxxxxx", "Kenzee", "Breena", "Richie", "Sean", "Mariah"];
+const players = ["Kinnon", "KJ", "Koby", "Kenzee", "Breena", "Richie", "Sean", "Hudson"];
+
+const teamLogos = {
+  "Eagles": "https://a.espncdn.com/i/teamlogos/nfl/500/phi.png",
+  "Chiefs": "https://a.espncdn.com/i/teamlogos/nfl/500/kc.png",
+  "Bills": "https://a.espncdn.com/i/teamlogos/nfl/500/buf.png",
+  "Ravens": "https://a.espncdn.com/i/teamlogos/nfl/500/bal.png",
+  "Lions": "https://a.espncdn.com/i/teamlogos/nfl/500/det.png",
+  "Commanders": "https://a.espncdn.com/i/teamlogos/nfl/500/wsh.png",
+  "Rams": "https://a.espncdn.com/i/teamlogos/nfl/500/lar.png",
+  "Texans": "https://a.espncdn.com/i/teamlogos/nfl/500/hou.png",
+  "Buccaneers": "https://a.espncdn.com/i/teamlogos/nfl/500/tb.png",
+  "Broncos": "https://a.espncdn.com/i/teamlogos/nfl/500/den.png",
+  "Packers": "https://a.espncdn.com/i/teamlogos/nfl/500/gb.png",
+  "Vikings": "https://a.espncdn.com/i/teamlogos/nfl/500/min.png",
+  "49ers": "https://a.espncdn.com/i/teamlogos/nfl/500/sf.png",
+  "Bengals": "https://a.espncdn.com/i/teamlogos/nfl/500/cin.png",
+  "Chargers": "https://a.espncdn.com/i/teamlogos/nfl/500/lac.png",
+  "Steelers": "https://a.espncdn.com/i/teamlogos/nfl/500/pit.png",
+  "Bears": "https://a.espncdn.com/i/teamlogos/nfl/500/chi.png",
+  "Seahawks": "https://a.espncdn.com/i/teamlogos/nfl/500/sea.png",
+  "Cowboys": "https://a.espncdn.com/i/teamlogos/nfl/500/dal.png",
+  "Cardinals": "https://a.espncdn.com/i/teamlogos/nfl/500/ari.png",
+  "Patriots": "https://a.espncdn.com/i/teamlogos/nfl/500/ne.png",
+  "Jets": "https://a.espncdn.com/i/teamlogos/nfl/500/nyj.png",
+  "Falcons": "https://a.espncdn.com/i/teamlogos/nfl/500/atl.png",
+  "Colts": "https://a.espncdn.com/i/teamlogos/nfl/500/ind.png",
+  "Panthers": "https://a.espncdn.com/i/teamlogos/nfl/500/car.png",
+  "Titans": "https://a.espncdn.com/i/teamlogos/nfl/500/ten.png",
+  "Raiders": "https://a.espncdn.com/i/teamlogos/nfl/500/lv.png",
+  "Jaguars": "https://a.espncdn.com/i/teamlogos/nfl/500/jax.png",
+  "Dolphins": "https://a.espncdn.com/i/teamlogos/nfl/500/mia.png",
+  "Giants": "https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png",
+  "Saints": "https://a.espncdn.com/i/teamlogos/nfl/500/no.png",
+  "Browns": "https://a.espncdn.com/i/teamlogos/nfl/500/cle.png"
+};
 
 function weightedRandomPick(pool) {
-    const weightedPool = pool.map(team => ({
-        ...team,
-        weight: 33 - team.rank // Weaker teams = higher weight
-    }));
-    const totalWeight = weightedPool.reduce((sum, t) => sum + t.weight, 0);
-    const rand = Math.random() * totalWeight;
-    let cumulative = 0;
-    for (let team of weightedPool) {
-        cumulative += team.weight;
-        if (rand < cumulative) return team;
-    }
+  const weightedPool = pool.map(team => ({
+    name: team,
+    weight: 33 - rankings.indexOf(team)
+  }));
+  const total = weightedPool.reduce((sum, t) => sum + t.weight, 0);
+  const r = Math.random() * total;
+  let cumulative = 0;
+  for (let t of weightedPool) {
+    cumulative += t.weight;
+    if (r < cumulative) return t.name;
+  }
+}
+
+function displayTeamLogo(teamName) {
+  const logo = teamLogos[teamName] || "";
+  return logo ? `<img src="${logo}" alt="${teamName}" class="team-logo"> ${teamName}` : teamName;
 }
 
 function createPlayerDiv(player) {
-    return `
-        <div class="player">
-            <div><strong>${player}</strong></div>
-            <div>
-                <div class="conference-label">AFC Teams</div>
-                <div class="empty-box" id="${player}-afc1"></div>
-                <div class="empty-box" id="${player}-afc2"></div>
-            </div>
-            <div>
-                <div class="conference-label">NFC Teams</div>
-                <div class="empty-box" id="${player}-nfc1"></div>
-                <div class="empty-box" id="${player}-nfc2"></div>
-            </div>
-        </div>
-    `;
+  return `
+    <div class="player">
+      <div><strong>${player}</strong></div>
+      <div>
+        <div class="conference-label">AFC Teams</div>
+        <div class="empty-box" id="${player}-afc1"></div>
+        <div class="empty-box" id="${player}-afc2"></div>
+      </div>
+      <div>
+        <div class="conference-label">NFC Teams</div>
+        <div class="empty-box" id="${player}-nfc1"></div>
+        <div class="empty-box" id="${player}-nfc2"></div>
+      </div>
+    </div>
+  `;
 }
 
 function fillTeams() {
-    let availableAFC = [...afcTeams];
-    let availableNFC = [...nfcTeams];
+  let availableAFC = [...afcTeams];
+  let availableNFC = [...nfcTeams];
 
-    players.forEach(player => {
-        for (let i = 1; i <= 2; i++) {
-            const afcTeam = weightedRandomPick(availableAFC);
-            const nfcTeam = weightedRandomPick(availableNFC);
+  players.forEach(player => {
+    for (let i = 1; i <= 2; i++) {
+      const afcTeam = weightedRandomPick(availableAFC);
+      const nfcTeam = weightedRandomPick(availableNFC);
 
-            // Remove picked teams so no duplicates
-            availableAFC = availableAFC.filter(t => t.name !== afcTeam.name);
-            availableNFC = availableNFC.filter(t => t.name !== nfcTeam.name);
+      availableAFC = availableAFC.filter(t => t !== afcTeam);
+      availableNFC = availableNFC.filter(t => t !== nfcTeam);
 
-            document.getElementById(`${player}-afc${i}`).textContent = afcTeam.name;
-            document.getElementById(`${player}-nfc${i}`).textContent = nfcTeam.name;
-        }
-    });
+      document.getElementById(`${player}-afc${i}`).innerHTML = displayTeamLogo(afcTeam);
+      document.getElementById(`${player}-nfc${i}`).innerHTML = displayTeamLogo(nfcTeam);
+    }
+  });
 }
 
-// Initial HTML generation
-document.getElementById('playerContainer').innerHTML = players.map(createPlayerDiv).join('');
-document.getElementById('randomButton').addEventListener('click', fillTeams);
+document.getElementById("playerContainer").innerHTML = players.map(createPlayerDiv).join("");
+document.getElementById("randomButton").addEventListener("click", fillTeams);
