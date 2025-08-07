@@ -63,24 +63,20 @@ function weightedRandomPick(pool) {
   }
 }
 
-function displayTeamLogo(teamName) {
-  const logo = teamLogos[teamName] || "";
-  return logo ? `<img src="${logo}" alt="${teamName}" class="team-logo"> ${teamName}` : teamName;
+function logoOnly(teamName) {
+  const logo = teamLogos[teamName];
+  return logo ? `<img src="${logo}" alt="${teamName}" class="team-logo-only">` : teamName;
 }
 
 function createPlayerDiv(player) {
   return `
-    <div class="player">
-      <div><strong>${player}</strong></div>
-      <div>
-        <div class="conference-label">AFC Teams</div>
-        <div class="empty-box" id="${player}-afc1"></div>
-        <div class="empty-box" id="${player}-afc2"></div>
-      </div>
-      <div>
-        <div class="conference-label">NFC Teams</div>
-        <div class="empty-box" id="${player}-nfc1"></div>
-        <div class="empty-box" id="${player}-nfc2"></div>
+    <div class="player-card">
+      <h2>${player}</h2>
+      <div class="team-group">
+        <div id="${player}-afc1" class="team-box"></div>
+        <div id="${player}-afc2" class="team-box"></div>
+        <div id="${player}-nfc1" class="team-box"></div>
+        <div id="${player}-nfc2" class="team-box"></div>
       </div>
     </div>
   `;
@@ -98,8 +94,8 @@ function fillTeams() {
       availableAFC = availableAFC.filter(t => t !== afcTeam);
       availableNFC = availableNFC.filter(t => t !== nfcTeam);
 
-      document.getElementById(`${player}-afc${i}`).innerHTML = displayTeamLogo(afcTeam);
-      document.getElementById(`${player}-nfc${i}`).innerHTML = displayTeamLogo(nfcTeam);
+      document.getElementById(`${player}-afc${i}`).innerHTML = logoOnly(afcTeam);
+      document.getElementById(`${player}-nfc${i}`).innerHTML = logoOnly(nfcTeam);
     }
   });
 }
