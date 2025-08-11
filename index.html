@@ -88,6 +88,10 @@
 
     <section class="boards">
       <h2>Draft Boards</h2>
+      <div class="board-actions">
+        <button id="copyPngBtn" class="ghost">Copy Image</button>
+        <button id="downloadPngBtn" class="ghost">Download PNG</button>
+      </div>
       <div id="boards" class="boards-grid"></div>
     </section>
 
@@ -101,6 +105,7 @@
     <small>Built for quick fair drafts. Uses full 32 teams (16 AFC + 16 NFC).</small>
   </footer>
 
+  <div id="toast" class="toast" hidden>Saved!</div>
   <script src="script.js"></script>
 </body>
 </html>

@@ -49,6 +49,8 @@ button:disabled{opacity:.5; cursor:not-allowed}
   padding:6px 8px; border-radius:8px; background:#0f1520; border:1px solid var(--border);
   font-size:14px;
 }
+.team-pool .team-pill.clickable { cursor:pointer; transition:transform .05s ease, background .15s ease; }
+.team-pool .team-pill.clickable:hover { background:#111a27; transform:translateY(-1px); }
 .team-pill .lhs{display:flex; align-items:center; gap:8px}
 .logo{
   width:22px; height:22px; object-fit:contain; background:#0b0f14; border-radius:4px;
@@ -58,6 +60,9 @@ button:disabled{opacity:.5; cursor:not-allowed}
 .tag.nfc{background:rgba(52,152,219,.15); color:#9fd4ff; border:1px solid rgba(52,152,219,.35)}
 
 .boards{background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px}
+.board-actions{
+  display:flex; gap:8px; margin:6px 0 12px;
+}
 .boards-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:16px}
 .board{border:1px solid var(--border); border-radius:12px; overflow:hidden}
 .board header{background:#0f1520; padding:10px 12px; border-bottom:1px solid var(--border)}
@@ -74,6 +79,19 @@ button:disabled{opacity:.5; cursor:not-allowed}
 .log{background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px}
 .log-list{margin:0; padding-left:20px; display:grid; gap:6px}
 footer{border-top:1px solid var(--border)}
+
+/* Toast feedback */
+.toast{
+  position:fixed; left:50%; bottom:24px; transform:translateX(-50%);
+  background:#111927; color:#e6edf3; border:1px solid #1f2937; border-radius:10px;
+  padding:10px 14px; box-shadow:0 6px 24px rgba(0,0,0,.35); z-index:9999;
+  font-size:14px;
+}
+
+/* Export cleanup */
+.exporting .log, .exporting .controls, .exporting .status footer{ display:none !important; }
+.export-no-logos .logo{ display:none !important; }
+
 @media (max-width: 980px){
   .controls{grid-template-columns:1fr}
   .status{grid-template-columns:1fr}

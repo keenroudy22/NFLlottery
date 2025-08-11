@@ -39,6 +39,14 @@ const TEAMS = [
 
 const LOGO_URL = (abbr) => `https://a.espncdn.com/i/teamlogos/nfl/500/${abbr}.png`;
 
+// Load html2canvas from CDN (for DOM → PNG)
+(function injectHtml2Canvas(){
+  const s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+  s.defer = true;
+  document.head.appendChild(s);
+})();
+
 // ---------- Helpers ----------
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => Array.from(document.querySelectorAll(sel));
@@ -59,6 +67,7 @@ function el(tag, attrs={}, ...children){
   Object.entries(attrs).forEach(([k,v])=>{
     if(k==='class') n.className=v;
     else if(k==='html') n.innerHTML=v;
+    else if(k==='crossOrigin') n.crossOrigin=v;
     else n.setAttribute(k,v);
   });
   children.flat().forEach(c=>{
@@ -68,13 +77,18 @@ function el(tag, attrs={}, ...children){
   });
   return n;
 }
+function toast(msg, ms=1600){
+  const t = $("#toast"); if(!t) return;
+  t.textContent = msg; t.hidden = false;
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(()=>{ t.hidden = true; }, ms);
+}
 
 // ---------- URL player names ----------
 function applyPlayersFromQuery(){
   const params = new URLSearchParams(location.search);
   const raw = params.get("players");
   if(!raw) return;
-  // split by comma or pipe, trim, ignore empties
   const names = raw.split(/[|,]/).map(s=>s.trim()).filter(Boolean).slice(0,8);
   if(names.length === 0) return;
   const inputs = $$("#playerList input");
@@ -124,13 +138,19 @@ $("#speedSelect").addEventListener("change",(e)=>{
   speedMs = parseInt(e.target.value,10);
   if(isDrafting && autoTimer){
     clearInterval(autoTimer);
-    autoTimer = (speedMs>0) ? setInterval(stepPick, speedMs) : null;
+    autoTimer = (speedMs>0) ? setInterval(stepPickRandom, speedMs) : null;
   }
 });
 $("#startDraftBtn").addEventListener("click", startDraft);
-$("#nextPickBtn").addEventListener("click", ()=> stepPick());
+$("#nextPickBtn").addEventListener("click", ()=> stepPickRandom());
 $("#undoBtn").addEventListener("click", undoLast);
 $("#resetBtn").addEventListener("click", resetDraft);
+$("#copyPngBtn")?.addEventListener("click", copyBoardsImage);
+$("#downloadPngBtn")?.addEventListener("click", downloadBoardsImage);
+
+// NEW: manual pick by clicking team pills
+afcPoolEl.addEventListener("click", (e)=> tryManualPick(e));
+nfcPoolEl.addEventListener("click", (e)=> tryManualPick(e));
 
 // ---------- Renders (w/ logos) ----------
 function syncPlayersFromInputs(){
@@ -144,9 +164,10 @@ function renderOrder(){
   });
 }
 function teamPill(t){
-  return el("li",{class:"team-pill"},
+  // clickable + dataset for manual pick
+  return el("li",{class:"team-pill clickable", "data-abbr":t.abbr},
     el("div",{class:"lhs"},
-      el("img",{class:"logo", src:LOGO_URL(t.abbr), alt:`${t.name} logo`, loading:"lazy"}),
+      el("img",{class:"logo", src:LOGO_URL(t.abbr), alt:`${t.name} logo`, crossOrigin:"anonymous", loading:"lazy"}),
       el("span",{}, t.name)
     ),
     el("span",{class:`tag ${t.conf.toLowerCase()}`}, t.conf)
@@ -170,7 +191,7 @@ function renderBoards(){
         list.appendChild(
           el("li",{},
             el("div",{class:"pick-lhs"},
-              el("img",{class:"logo", src:LOGO_URL(pick.abbr), alt:`${pick.name} logo`, loading:"lazy"}),
+              el("img",{class:"logo", src:LOGO_URL(pick.abbr), alt:`${pick.name} logo`, crossOrigin:"anonymous", loading:"lazy"}),
               el("span",{}, pick.name)
             ),
             el("span",{class:`conf ${pick.conf.toLowerCase()}`}, pick.conf)
@@ -221,19 +242,61 @@ function startDraft(){
 
   renderOrder(); renderPools(); renderBoards(); renderLog(); updateStatus();
 
-  if(speedMs>0){ autoTimer = setInterval(stepPick, speedMs); } else { autoTimer = null; }
+  if(speedMs>0){ autoTimer = setInterval(stepPickRandom, speedMs); } else { autoTimer = null; }
 }
-function stepPick(){
+function finishDraft(){
+  isDrafting = false; stopAuto();
+  $("#nextPickBtn").disabled = true;
+  $("#undoBtn").disabled = false;
+  $("#startDraftBtn").disabled = false;
+  onClockEl.textContent = "Draft complete!";
+}
+function stopAuto(){ if(autoTimer){ clearInterval(autoTimer); autoTimer = null; } $("#nextPickBtn").disabled = false; }
+
+// RANDOM pick for auto / Next Pick
+function stepPickRandom(){
+  const conf = roundPattern[currentRound];
+  const pool = (conf==="AFC") ? afcPool : nfcPool;
+  if(pool.length === 0){ alert(`${conf} pool empty`); stopAuto(); return; }
+  const idx = Math.floor(Math.random()*pool.length);
+  const team = pool[idx];
+  stepPickTeam(team.abbr);
+}
+
+// Manual click handler
+function tryManualPick(e){
+  const pill = e.target.closest(".team-pill");
+  if(!pill) return;
+
+  if(!isDrafting){ toast("Start the draft first"); return; }
+  if(speedMs>0){ toast("Set Auto-pick speed to Manual to pick by clicking"); return; }
+
+  const abbr = pill.getAttribute("data-abbr");
+  const confNeeded = roundPattern[currentRound];
+  const team = (confNeeded==="AFC" ? afcPool : nfcPool).find(t=>t.abbr===abbr);
+
+  if(!team){
+    const msg = (["AFC","NFC"].includes(confNeeded))
+      ? `It's ${confNeeded} round — pick from the ${confNeeded} pool`
+      : `Not available`;
+    toast(msg);
+    return;
+  }
+  stepPickTeam(abbr);
+}
+
+// Core assignment
+function stepPickTeam(abbr){
   if(!isDrafting) return;
+
   const ord = snakeOrder(order, currentRound);
   const currentPlayerIndex = ord[pickIndexThisRound];
   const p = players[currentPlayerIndex];
   const conf = roundPattern[currentRound];
 
-  const pool = (conf==="AFC") ? afcPool : nfcPool;
-  if(pool.length === 0){ alert(`${conf} pool is empty. Pattern/pools mismatch.`); stopAuto(); return; }
-
-  const tIndex = Math.floor(Math.random()*pool.length);
+  let pool = (conf==="AFC") ? afcPool : nfcPool;
+  const tIndex = pool.findIndex(t=>t.abbr===abbr);
+  if(tIndex===-1){ toast("Team not available"); return; }
   const team = pool.splice(tIndex,1)[0];
 
   p.picks.push(team);
@@ -243,8 +306,7 @@ function stepPick(){
   log.unshift(`Round ${roundHuman}: ${p.name} -> ${team.name} (${team.conf})`);
   history.push({ round: currentRound, orderIndex: pickIndexThisRound, playerIndex: currentPlayerIndex, team });
 
-  renderPools(); renderBoards(); renderLog();
-  $("#undoBtn").disabled = false;
+  renderPools(); renderBoards(); renderLog(); $("#undoBtn").disabled = false;
 
   pickIndexThisRound++;
   if(pickIndexThisRound >= players.length){
@@ -253,13 +315,8 @@ function stepPick(){
   }
   updateStatus();
 }
-function finishDraft(){
-  isDrafting = false; stopAuto();
-  $("#nextPickBtn").disabled = true;
-  $("#undoBtn").disabled = false;
-  $("#startDraftBtn").disabled = false;
-  onClockEl.textContent = "Draft complete!";
-}
+
+// Undo / Reset
 function undoLast(){
   if(history.length===0) return;
   const last = history.pop();
@@ -272,12 +329,10 @@ function undoLast(){
 
   if(last.team.conf==="AFC") afcPool.push(last.team); else nfcPool.push(last.team);
 
-  const roundHuman = last.round+1;
-  const line = `Round ${roundHuman}: ${p.name} -> ${last.team.name} (${last.team.conf})`;
-  const logIdx = log.indexOf(line); if(logIdx !== -1) log.splice(logIdx,1);
+  const line = `Round ${last.round+1}: ${p.name} -> ${last.team.name} (${last.team.conf})`;
+  const li = log.indexOf(line); if(li !== -1) log.splice(li,1);
 
-  isDrafting = true;
-  $("#nextPickBtn").disabled = (speedMs>0);
+  isDrafting = true; $("#nextPickBtn").disabled = (speedMs>0);
   renderPools(); renderBoards(); renderLog(); updateStatus();
 }
 function resetDraft(){
@@ -291,7 +346,84 @@ function resetDraft(){
   $("#onClock").textContent = "—"; $("#roundInfo").textContent = "Round — / 4"; $("#confInfo").textContent = "Conference: —";
   $("#startDraftBtn").disabled = false; $("#nextPickBtn").disabled = true; $("#undoBtn").disabled = true;
 }
-function stopAuto(){ if(autoTimer){ clearInterval(autoTimer); autoTimer = null; } $("#nextPickBtn").disabled = false; }
+
+// ---------- Export helpers ----------
+async function renderBoardsCanvas({noLogos=false}={}){
+  if(typeof html2canvas !== 'function'){
+    toast("Loading capture engine… try again in 1–2 sec"); 
+    throw new Error("html2canvas not loaded yet");
+  }
+  const root = document.body;
+  root.classList.add("exporting");
+  if(noLogos) root.classList.add("export-no-logos");
+
+  const node = $(".boards");
+  const bg = getComputedStyle(document.body).backgroundColor || "#0b0f14";
+  try{
+    const canvas = await html2canvas(node, {
+      backgroundColor: bg,
+      scale: Math.min(2, window.devicePixelRatio || 1.5),
+      useCORS: true,
+      allowTaint: false,
+      imageTimeout: 5000,
+      logging: false
+    });
+    return canvas;
+  } finally {
+    root.classList.remove("exporting");
+    root.classList.remove("export-no-logos");
+  }
+}
+
+async function copyBoardsImage(){
+  try{
+    let canvas;
+    try{
+      canvas = await renderBoardsCanvas({noLogos:false});
+    }catch(e){
+      canvas = await renderBoardsCanvas({noLogos:true});
+      toast("Copied (logos hidden due to CORS)");
+    }
+    const blob = await new Promise(res => canvas.toBlob(res, "image/png"));
+    if(!blob) throw new Error("Failed to encode PNG");
+
+    if(navigator.clipboard && window.ClipboardItem){
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+      if($("#toast").hidden) toast("Copied to clipboard ✅");
+    }else{
+      downloadBlob(blob, "draft-boards.png");
+      toast("Clipboard not supported — downloaded instead");
+    }
+  }catch(err){
+    console.error(err);
+    toast("Couldn’t copy. Try Download PNG.");
+  }
+}
+
+async function downloadBoardsImage(){
+  try{
+    let canvas;
+    try{
+      canvas = await renderBoardsCanvas({noLogos:false});
+    }catch(e){
+      canvas = await renderBoardsCanvas({noLogos:true});
+      toast("Downloaded (logos hidden due to CORS)");
+    }
+    const blob = await new Promise(res => canvas.toBlob(res, "image/png"));
+    downloadBlob(blob, "draft-boards.png");
+  }catch(err){
+    console.error(err);
+    toast("Download failed");
+  }
+}
+
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  a.remove(); URL.revokeObjectURL(url);
+}
 
 // ---------- First load ----------
 applyPlayersFromQuery();
