@@ -1,107 +1,298 @@
-const rankings = [
-  "Eagles", "Chiefs", "Bills", "Ravens", "Lions", "Commanders", "Rams", "Texans",
-  "Buccaneers", "Broncos", "Packers", "Vikings", "49ers", "Bengals", "Chargers", "Steelers",
-  "Bears", "Seahawks", "Cowboys", "Cardinals", "Patriots", "Jets", "Falcons", "Colts",
-  "Panthers", "Titans", "Raiders", "Jaguars", "Dolphins", "Giants", "Saints", "Browns"
+// ---------- Data with ESPN abbreviations for logos ----------
+const TEAMS = [
+  // AFC (16)
+  { name:"Bills",      conf:"AFC", abbr:"buf" },
+  { name:"Dolphins",   conf:"AFC", abbr:"mia" },
+  { name:"Patriots",   conf:"AFC", abbr:"ne"  },
+  { name:"Jets",       conf:"AFC", abbr:"nyj" },
+  { name:"Ravens",     conf:"AFC", abbr:"bal" },
+  { name:"Bengals",    conf:"AFC", abbr:"cin" },
+  { name:"Browns",     conf:"AFC", abbr:"cle" },
+  { name:"Steelers",   conf:"AFC", abbr:"pit" },
+  { name:"Texans",     conf:"AFC", abbr:"hou" },
+  { name:"Colts",      conf:"AFC", abbr:"ind" },
+  { name:"Jaguars",    conf:"AFC", abbr:"jax" },
+  { name:"Titans",     conf:"AFC", abbr:"ten" },
+  { name:"Chiefs",     conf:"AFC", abbr:"kc"  },
+  { name:"Raiders",    conf:"AFC", abbr:"lv"  },
+  { name:"Chargers",   conf:"AFC", abbr:"lac" },
+  { name:"Broncos",    conf:"AFC", abbr:"den" },
+
+  // NFC (16)
+  { name:"Cowboys",    conf:"NFC", abbr:"dal" },
+  { name:"Giants",     conf:"NFC", abbr:"nyg" },
+  { name:"Eagles",     conf:"NFC", abbr:"phi" },
+  { name:"Commanders", conf:"NFC", abbr:"wsh" },
+  { name:"Lions",      conf:"NFC", abbr:"det" },
+  { name:"Vikings",    conf:"NFC", abbr:"min" },
+  { name:"Packers",    conf:"NFC", abbr:"gb"  },
+  { name:"Bears",      conf:"NFC", abbr:"chi" },
+  { name:"Buccaneers", conf:"NFC", abbr:"tb"  },
+  { name:"Falcons",    conf:"NFC", abbr:"atl" },
+  { name:"Panthers",   conf:"NFC", abbr:"car" },
+  { name:"Saints",     conf:"NFC", abbr:"no"  },
+  { name:"49ers",      conf:"NFC", abbr:"sf"  },
+  { name:"Seahawks",   conf:"NFC", abbr:"sea" },
+  { name:"Rams",       conf:"NFC", abbr:"lar" },
+  { name:"Cardinals",  conf:"NFC", abbr:"ari" },
 ];
 
-const afcTeams = [
-  "Bills", "Ravens", "Chiefs", "Texans", "Broncos", "Chargers", "Steelers", "Bengals",
-  "Patriots", "Jets", "Colts", "Titans", "Raiders", "Jaguars", "Dolphins", "Browns"
-];
+const LOGO_URL = (abbr) => `https://a.espncdn.com/i/teamlogos/nfl/500/${abbr}.png`;
 
-const nfcTeams = rankings.filter(team => !afcTeams.includes(team));
+// ---------- Helpers ----------
+const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
-const players = ["Richie", "Keen", "xxxxxx", "Kenzee", "Breena", "Mariah", "Dirb", "Sean"];
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function snakeOrder(baseOrder, roundIndex){
+  return (roundIndex % 2 === 0) ? baseOrder.slice() : baseOrder.slice().reverse();
+}
+function el(tag, attrs={}, ...children){
+  const n = document.createElement(tag);
+  Object.entries(attrs).forEach(([k,v])=>{
+    if(k==='class') n.className=v;
+    else if(k==='html') n.innerHTML=v;
+    else n.setAttribute(k,v);
+  });
+  children.flat().forEach(c=>{
+    if(c==null) return;
+    if(typeof c==='string') n.appendChild(document.createTextNode(c));
+    else n.appendChild(c);
+  });
+  return n;
+}
 
-const teamLogos = {
-  "Eagles": "https://a.espncdn.com/i/teamlogos/nfl/500/phi.png",
-  "Chiefs": "https://a.espncdn.com/i/teamlogos/nfl/500/kc.png",
-  "Bills": "https://a.espncdn.com/i/teamlogos/nfl/500/buf.png",
-  "Ravens": "https://a.espncdn.com/i/teamlogos/nfl/500/bal.png",
-  "Lions": "https://a.espncdn.com/i/teamlogos/nfl/500/det.png",
-  "Commanders": "https://a.espncdn.com/i/teamlogos/nfl/500/wsh.png",
-  "Rams": "https://a.espncdn.com/i/teamlogos/nfl/500/lar.png",
-  "Texans": "https://a.espncdn.com/i/teamlogos/nfl/500/hou.png",
-  "Buccaneers": "https://a.espncdn.com/i/teamlogos/nfl/500/tb.png",
-  "Broncos": "https://a.espncdn.com/i/teamlogos/nfl/500/den.png",
-  "Packers": "https://a.espncdn.com/i/teamlogos/nfl/500/gb.png",
-  "Vikings": "https://a.espncdn.com/i/teamlogos/nfl/500/min.png",
-  "49ers": "https://a.espncdn.com/i/teamlogos/nfl/500/sf.png",
-  "Bengals": "https://a.espncdn.com/i/teamlogos/nfl/500/cin.png",
-  "Chargers": "https://a.espncdn.com/i/teamlogos/nfl/500/lac.png",
-  "Steelers": "https://a.espncdn.com/i/teamlogos/nfl/500/pit.png",
-  "Bears": "https://a.espncdn.com/i/teamlogos/nfl/500/chi.png",
-  "Seahawks": "https://a.espncdn.com/i/teamlogos/nfl/500/sea.png",
-  "Cowboys": "https://a.espncdn.com/i/teamlogos/nfl/500/dal.png",
-  "Cardinals": "https://a.espncdn.com/i/teamlogos/nfl/500/ari.png",
-  "Patriots": "https://a.espncdn.com/i/teamlogos/nfl/500/ne.png",
-  "Jets": "https://a.espncdn.com/i/teamlogos/nfl/500/nyj.png",
-  "Falcons": "https://a.espncdn.com/i/teamlogos/nfl/500/atl.png",
-  "Colts": "https://a.espncdn.com/i/teamlogos/nfl/500/ind.png",
-  "Panthers": "https://a.espncdn.com/i/teamlogos/nfl/500/car.png",
-  "Titans": "https://a.espncdn.com/i/teamlogos/nfl/500/ten.png",
-  "Raiders": "https://a.espncdn.com/i/teamlogos/nfl/500/lv.png",
-  "Jaguars": "https://a.espncdn.com/i/teamlogos/nfl/500/jax.png",
-  "Dolphins": "https://a.espncdn.com/i/teamlogos/nfl/500/mia.png",
-  "Giants": "https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png",
-  "Saints": "https://a.espncdn.com/i/teamlogos/nfl/500/no.png",
-  "Browns": "https://a.espncdn.com/i/teamlogos/nfl/500/cle.png"
-};
-
-function weightedRandomPick(pool) {
-  const weightedPool = pool.map(team => ({
-    name: team,
-    weight: 33 - rankings.indexOf(team)
-  }));
-  const total = weightedPool.reduce((sum, t) => sum + t.weight, 0);
-  const r = Math.random() * total;
-  let cumulative = 0;
-  for (let t of weightedPool) {
-    cumulative += t.weight;
-    if (r < cumulative) return t.name;
+// ---------- URL player names ----------
+function applyPlayersFromQuery(){
+  const params = new URLSearchParams(location.search);
+  const raw = params.get("players");
+  if(!raw) return;
+  // split by comma or pipe, trim, ignore empties
+  const names = raw.split(/[|,]/).map(s=>s.trim()).filter(Boolean).slice(0,8);
+  if(names.length === 0) return;
+  const inputs = $$("#playerList input");
+  for(let i=0;i<inputs.length;i++){
+    inputs[i].value = names[i] || `Player ${i+1}`;
   }
 }
 
-function createPlayerDiv(player) {
-  return `
-    <div class="player-card">
-      <h2>${player}</h2>
-      <div class="team-group">
-        <div id="${player}-afc1" class="team-box"></div>
-        <div id="${player}-afc2" class="team-box"></div>
-        <div id="${player}-nfc1" class="team-box"></div>
-        <div id="${player}-nfc2" class="team-box"></div>
-      </div>
-    </div>
-  `;
+// ---------- State ----------
+let players = [];           // [{name, picks:[], afc:0, nfc:0}]
+let order = [];             // [0..7]
+let roundPattern = ["AFC","NFC","AFC","NFC"];
+let afcPool = [];
+let nfcPool = [];
+let log = [];
+let isDrafting = false;
+let currentRound = 0;       // 0..3
+let pickIndexThisRound = 0; // 0..7
+let autoTimer = null;
+let speedMs = 900;
+let history = []; // stack of {round, orderIndex, playerIndex, team}
+
+const playerInputs = $$("#playerList input");
+const draftOrderEl = $("#draftOrder");
+const afcPoolEl = $("#afcPool");
+const nfcPoolEl = $("#nfcPool");
+const boardsEl = $("#boards");
+const logList = $("#logList");
+const onClockEl = $("#onClock");
+const roundInfoEl = $("#roundInfo");
+const confInfoEl = $("#confInfo");
+
+// ---------- Events ----------
+$("#randomizeOrderBtn").addEventListener("click", () => {
+  syncPlayersFromInputs();
+  order = shuffle(order);
+  renderOrder();
+});
+$("#resetOrderBtn").addEventListener("click", () => {
+  playerInputs.forEach((inp,i)=>inp.value = `Player ${i+1}`);
+});
+$("#patternSelect").addEventListener("change", (e)=>{
+  roundPattern = e.target.value.split(",");
+  if(isDrafting) updateStatus();
+});
+$("#speedSelect").addEventListener("change",(e)=>{
+  speedMs = parseInt(e.target.value,10);
+  if(isDrafting && autoTimer){
+    clearInterval(autoTimer);
+    autoTimer = (speedMs>0) ? setInterval(stepPick, speedMs) : null;
+  }
+});
+$("#startDraftBtn").addEventListener("click", startDraft);
+$("#nextPickBtn").addEventListener("click", ()=> stepPick());
+$("#undoBtn").addEventListener("click", undoLast);
+$("#resetBtn").addEventListener("click", resetDraft);
+
+// ---------- Renders (w/ logos) ----------
+function syncPlayersFromInputs(){
+  players = playerInputs.map(inp => ({ name: inp.value.trim() || "Player", picks:[], afc:0, nfc:0 }));
+  if(order.length!==players.length) order = players.map((_,i)=>i);
 }
-
-function logoOnly(teamName) {
-  const logo = teamLogos[teamName];
-  return logo ? `<img src="${logo}" alt="${teamName}" class="team-logo-only" />` : "";
-}
-
-function fillTeams() {
-  let availableAFC = [...afcTeams];
-  let availableNFC = [...nfcTeams];
-
-  players.forEach(player => {
-    for (let i = 1; i <= 2; i++) {
-      const afcTeam = weightedRandomPick(availableAFC);
-      const nfcTeam = weightedRandomPick(availableNFC);
-
-      availableAFC = availableAFC.filter(t => t !== afcTeam);
-      availableNFC = availableNFC.filter(t => t !== nfcTeam);
-
-      document.getElementById(`${player}-afc${i}`).innerHTML = logoOnly(afcTeam);
-      document.getElementById(`${player}-nfc${i}`).innerHTML = logoOnly(nfcTeam);
-    }
+function renderOrder(){
+  draftOrderEl.innerHTML = "";
+  order.forEach(i=>{
+    draftOrderEl.appendChild(el("li", {}, players[i].name));
   });
 }
+function teamPill(t){
+  return el("li",{class:"team-pill"},
+    el("div",{class:"lhs"},
+      el("img",{class:"logo", src:LOGO_URL(t.abbr), alt:`${t.name} logo`, loading:"lazy"}),
+      el("span",{}, t.name)
+    ),
+    el("span",{class:`tag ${t.conf.toLowerCase()}`}, t.conf)
+  );
+}
+function renderPools(){
+  afcPoolEl.innerHTML = "";
+  nfcPoolEl.innerHTML = "";
+  afcPool.forEach(t=> afcPoolEl.appendChild(teamPill(t)));
+  nfcPool.forEach(t=> nfcPoolEl.appendChild(teamPill(t)));
+}
+function renderBoards(){
+  boardsEl.innerHTML = "";
+  players.forEach((p)=>{
+    const board = el("div",{class:"board"});
+    board.appendChild(el("header",{}, el("h3",{}, `${p.name}`)));
+    const list = el("ol");
+    for(let i=0;i<4;i++){
+      const pick = p.picks[i];
+      if(pick){
+        list.appendChild(
+          el("li",{},
+            el("div",{class:"pick-lhs"},
+              el("img",{class:"logo", src:LOGO_URL(pick.abbr), alt:`${pick.name} logo`, loading:"lazy"}),
+              el("span",{}, pick.name)
+            ),
+            el("span",{class:`conf ${pick.conf.toLowerCase()}`}, pick.conf)
+          )
+        );
+      }else{
+        list.appendChild(el("li",{class:"empty"}, el("span",{style:"opacity:.6"}, "—")));
+      }
+    }
+    board.appendChild(list);
+    boardsEl.appendChild(board);
+  });
+}
+function renderLog(){
+  logList.innerHTML = "";
+  log.forEach(item=> logList.appendChild(el("li",{}, item)));
+}
+function updateStatus(){
+  const roundHuman = currentRound+1;
+  const conf = roundPattern[currentRound] || "?";
+  roundInfoEl.textContent = `Round ${roundHuman} / 4`;
+  confInfoEl.textContent = `Conference: ${conf}`;
+  const ord = snakeOrder(order, currentRound);
+  const idx = ord[pickIndexThisRound];
+  onClockEl.textContent = players[idx]?.name ?? "—";
+}
 
-// Pre-load names and team boxes
-document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("playerContainer").innerHTML = players.map(createPlayerDiv).join("");
-  document.getElementById("randomButton").addEventListener("click", fillTeams);
-});
+// ---------- Draft Flow ----------
+function startDraft(){
+  if(isDrafting) return;
+
+  syncPlayersFromInputs();
+  if(players.length !== 8){ alert("Must have exactly 8 players."); return; }
+
+  afcPool = TEAMS.filter(t=>t.conf==="AFC");
+  nfcPool = TEAMS.filter(t=>t.conf==="NFC");
+  log = [];
+  history = [];
+  players.forEach(p=>{ p.picks=[]; p.afc=0; p.nfc=0; });
+
+  currentRound = 0;
+  pickIndexThisRound = 0;
+  isDrafting = true;
+
+  $("#startDraftBtn").disabled = true;
+  $("#nextPickBtn").disabled = false;
+  $("#undoBtn").disabled = true;
+
+  renderOrder(); renderPools(); renderBoards(); renderLog(); updateStatus();
+
+  if(speedMs>0){ autoTimer = setInterval(stepPick, speedMs); } else { autoTimer = null; }
+}
+function stepPick(){
+  if(!isDrafting) return;
+  const ord = snakeOrder(order, currentRound);
+  const currentPlayerIndex = ord[pickIndexThisRound];
+  const p = players[currentPlayerIndex];
+  const conf = roundPattern[currentRound];
+
+  const pool = (conf==="AFC") ? afcPool : nfcPool;
+  if(pool.length === 0){ alert(`${conf} pool is empty. Pattern/pools mismatch.`); stopAuto(); return; }
+
+  const tIndex = Math.floor(Math.random()*pool.length);
+  const team = pool.splice(tIndex,1)[0];
+
+  p.picks.push(team);
+  if(team.conf==="AFC") p.afc++; else p.nfc++;
+
+  const roundHuman = currentRound+1;
+  log.unshift(`Round ${roundHuman}: ${p.name} -> ${team.name} (${team.conf})`);
+  history.push({ round: currentRound, orderIndex: pickIndexThisRound, playerIndex: currentPlayerIndex, team });
+
+  renderPools(); renderBoards(); renderLog();
+  $("#undoBtn").disabled = false;
+
+  pickIndexThisRound++;
+  if(pickIndexThisRound >= players.length){
+    pickIndexThisRound = 0; currentRound++;
+    if(currentRound >= 4){ finishDraft(); return; }
+  }
+  updateStatus();
+}
+function finishDraft(){
+  isDrafting = false; stopAuto();
+  $("#nextPickBtn").disabled = true;
+  $("#undoBtn").disabled = false;
+  $("#startDraftBtn").disabled = false;
+  onClockEl.textContent = "Draft complete!";
+}
+function undoLast(){
+  if(history.length===0) return;
+  const last = history.pop();
+  currentRound = last.round; pickIndexThisRound = last.orderIndex;
+
+  const p = players[last.playerIndex];
+  const idx = p.picks.findIndex(x=>x===last.team);
+  if(idx !== -1) p.picks.splice(idx,1);
+  if(last.team.conf==="AFC") p.afc = Math.max(0,p.afc-1); else p.nfc = Math.max(0,p.nfc-1);
+
+  if(last.team.conf==="AFC") afcPool.push(last.team); else nfcPool.push(last.team);
+
+  const roundHuman = last.round+1;
+  const line = `Round ${roundHuman}: ${p.name} -> ${last.team.name} (${last.team.conf})`;
+  const logIdx = log.indexOf(line); if(logIdx !== -1) log.splice(logIdx,1);
+
+  isDrafting = true;
+  $("#nextPickBtn").disabled = (speedMs>0);
+  renderPools(); renderBoards(); renderLog(); updateStatus();
+}
+function resetDraft(){
+  stopAuto(); isDrafting = false;
+  afcPool = []; nfcPool = []; log = []; history = [];
+  players = []; order = []; currentRound = 0; pickIndexThisRound = 0;
+
+  syncPlayersFromInputs(); renderOrder();
+  $("#afcPool").innerHTML = ""; $("#nfcPool").innerHTML = "";
+  $("#boards").innerHTML = ""; $("#logList").innerHTML = "";
+  $("#onClock").textContent = "—"; $("#roundInfo").textContent = "Round — / 4"; $("#confInfo").textContent = "Conference: —";
+  $("#startDraftBtn").disabled = false; $("#nextPickBtn").disabled = true; $("#undoBtn").disabled = true;
+}
+function stopAuto(){ if(autoTimer){ clearInterval(autoTimer); autoTimer = null; } $("#nextPickBtn").disabled = false; }
+
+// ---------- First load ----------
+applyPlayersFromQuery();
+resetDraft();
