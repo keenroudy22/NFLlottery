@@ -1,20 +1,105 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>NFL Lottery</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NFL 8-Player Snake Draft (2 AFC, 2 NFC)</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>NFL Lottery</h1>
-    <p class="description">
-      Each player is randomly assigned 4 NFL teams. If one of your teams hits the winning number & wins the game, the others owe you $15. Good luck!
-    </p>
-    <div id="playerContainer"></div>
-    <button id="randomButton">Assign Teams</button>
-  </div>
+  <header>
+    <h1>NFL Snake Draft</h1>
+    <p>8 players · 4 rounds · Snake order · Each player gets <strong>2 AFC</strong> + <strong>2 NFC</strong>.</p>
+    <p class="hint">Tip: pass names in the URL → <code>?players=Ana,Ben,Cam,Dee,Eli,Fay,Gus,Hud</code></p>
+  </header>
+
+  <main>
+    <section class="controls">
+      <div class="players-box">
+        <h2>Players</h2>
+        <ol id="playerList" class="player-list">
+          <li><input value="Player 1" /></li>
+          <li><input value="Player 2" /></li>
+          <li><input value="Player 3" /></li>
+          <li><input value="Player 4" /></li>
+          <li><input value="Player 5" /></li>
+          <li><input value="Player 6" /></li>
+          <li><input value="Player 7" /></li>
+          <li><input value="Player 8" /></li>
+        </ol>
+        <div class="buttons">
+          <button id="randomizeOrderBtn">Randomize Order</button>
+          <button id="resetOrderBtn" class="ghost">Reset Names</button>
+        </div>
+      </div>
+
+      <div class="draft-settings">
+        <h2>Draft Settings</h2>
+        <label class="row">
+          <span>Rounds conference pattern:</span>
+          <select id="patternSelect" title="Conference per round">
+            <option value="AFC,NFC,AFC,NFC">AFC, NFC, AFC, NFC (default)</option>
+            <option value="NFC,AFC,NFC,AFC">NFC, AFC, NFC, AFC</option>
+          </select>
+        </label>
+        <label class="row">
+          <span>Auto-pick speed:</span>
+          <select id="speedSelect">
+            <option value="0">Manual (Next Pick)</option>
+            <option value="400">Fast</option>
+            <option value="900" selected>Normal</option>
+            <option value="1600">Slow</option>
+          </select>
+        </label>
+        <div class="buttons">
+          <button id="startDraftBtn" class="primary">Start Draft</button>
+          <button id="nextPickBtn" disabled>Next Pick</button>
+          <button id="undoBtn" class="ghost" disabled>Undo</button>
+          <button id="resetBtn" class="ghost">Reset Draft</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="status">
+      <div class="order">
+        <h3>Draft Order</h3>
+        <ol id="draftOrder"></ol>
+      </div>
+      <div class="now">
+        <h3>On the Clock</h3>
+        <div id="onClock">—</div>
+        <div id="roundInfo">Round — / 4</div>
+        <div id="confInfo">Conference: —</div>
+      </div>
+      <div class="pool">
+        <h3>Teams Remaining</h3>
+        <div class="pool-cols">
+          <div>
+            <h4>AFC</h4>
+            <ul id="afcPool" class="team-pool"></ul>
+          </div>
+          <div>
+            <h4>NFC</h4>
+            <ul id="nfcPool" class="team-pool"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="boards">
+      <h2>Draft Boards</h2>
+      <div id="boards" class="boards-grid"></div>
+    </section>
+
+    <section class="log">
+      <h2>Log</h2>
+      <ol id="logList" class="log-list"></ol>
+    </section>
+  </main>
+
+  <footer>
+    <small>Built for quick fair drafts. Uses full 32 teams (16 AFC + 16 NFC).</small>
+  </footer>
 
   <script src="script.js"></script>
 </body>
